@@ -35,6 +35,7 @@ scp username@servername.edu:/absolute/path/to/file path/on/local/machine/
 ```
  
 5. Grab read length distribution using awk or BBMap shell script
+
 awk
 ```bash
 awk 'NR%4 == 2 {lengths[length($0)]++ ; counter++} END {for (l in lengths) {print l, lengths[l]}; print "total reads: " counter}' cat-r1.fastq > readlength-r1.txt
