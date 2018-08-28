@@ -83,6 +83,7 @@ export PYTHONPATH=/programs/cogent/lib64/python2.7/site-packages/
 run <prep_silva_data.py>
 ```bash
 gunzip SILVA_132_LSUParc_tax_silva.fasta.gz
+
 ./prep_silva_data.py <SILVA_132_LSUParc_tax_silva.fasta.gz> <taxonomy.outfile.txt> <sequence.outfile.fasta>
 ```
 
@@ -96,3 +97,14 @@ Make taxonomy file compatiable for classifier in QIIME2
 ./python prep_silva_taxonomy_file.py <parsed.taxonomy.file.txt> <taxonomy.rdp.outfile.txt>
 ```
 
+Cluster SILVA FASTA file at 99% using QIIME1 pick.otus.py
+ I have qiime1 installed in a seperate conda environment, see http://qiime.org/install/install.html for help
+```bash
+source deactivate qiime2-2018.6
+
+source active qiime1
+
+pick_otus.py -i <sequence.outfile.fasta> -s 0.99 --threads 40 -o <99-clustered-sequence.outfile>
+```
+
+Now pick a repersentative set of sequences from the OTU file clustered at 99%
