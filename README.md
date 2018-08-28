@@ -47,4 +47,52 @@ or BBMap Shell
 readlength.sh in=cat-r1-fastq out=histogram-r1.txt | readlength.sh in=cat-r2-fastq out=histogram-r2.txt
 ``` 
 
- 
+# Train NaiveBayes (sklearn) Classifier in QIIME2 Environment
+
+1. Add QIIME2 to $PATH and activate QIIME Environment
+```bash
+export PATH=/programs/Anaconda2/bin:$PATH
+source activate qiime2-2018.6 
+```
+
+2. Download lastest SILVA Database Containing 28S rRNA and Taxonomy File
+
+ There are two choices, either the comprehensive or reference. The comprehensive is much larger with quality checked rRNA sequences over 300bp,
+ the reference containes rRNA sequneces of high quality at least 1900bp long.  
+
+Comprehensive database
+```bash
+wget http://ftp.arb-silva.de/release_132/Exports/SILVA_132_LSUParc_tax_silva.fasta.gz  
+wget http://ftp.arb-silva.de/release_132/Exports/taxonomy/taxmap_embl_lsu_parc_132.txt.gz
+```
+
+Reference database
+```bash
+wget http://ftp.arb-silva.de/release_132/Exports/SILVA_132_LSURef_tax_silva.fasta.gz
+wget http://ftp.arb-silva.de/release_132/Exports/taxonomy/taxmap_embl_lsu_parc_132.txt.gz
+```
+
+3. Reformat FASTA file and Taxonomy Database so that they meet the QIIME environment requirements 
+ i.e. Make sure U is converted to T, eliminate non-ASCII characters, asterisks "*" removed, and taxonomy file contains full-length taxonomic assignments even if it doesn't exist (i.e. <k_fungi;sk_Dikaraya;p_Basidiomycota;c_____;o_____;f_____;g_____;s_____>)
+
+export python 2 path Pycogent was written in python 2.7
+```bash
+export PYTHONPATH=/programs/cogent/lib64/python2.7/site-packages/
+```
+
+run <prep_silva_data.py>
+```bash
+gunzip SILVA_132_LSUParc_tax_silva.fasta.gz
+./prep_silva_data.py <SILVA_132_LSUParc_tax_silva.fasta.gz> <taxonomy.outfile.txt> <sequence.outfile.fasta>
+```
+
+remove non-ASCII characters
+```bash
+./parse_nonstandard_chars.py <taxonomy.outfile.txt> > <parsed.taxonomy.file.txt>
+```
+
+Make taxonomy file compatiable for classifier in QIIME2
+```bash
+./python prep_silva_taxonomy_file.py <parsed.taxonomy.file.txt> <taxonomy.rdp.outfile.txt>
+```
+
