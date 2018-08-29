@@ -48,7 +48,7 @@ readlength.sh in=cat-r1-fastq out=histogram-r1.txt | readlength.sh in=cat-r2-fas
 ``` 
 
 # Train NaiveBayes (sklearn) Classifier in QIIME2 Environment
- This procedure is constructing novel classifiers - this example uses the latest SILVA database and creates classifiers on different domains of the 28S LSU rRNA
+ This procedure is for constructing novel classifiers - this example uses the latest SILVA database and creates classifiers on different domains of the 28S LSU rRNA
 
 1. Add QIIME2 to $PATH and activate QIIME Environment
 ```bash
@@ -72,6 +72,7 @@ Reference database
 wget http://ftp.arb-silva.de/release_132/Exports/SILVA_132_LSURef_tax_silva.fasta.gz
 wget http://ftp.arb-silva.de/release_132/Exports/taxonomy/taxmap_embl_lsu_parc_132.txt.gz
 ```
+
 
 3. Reformat FASTA file and Taxonomy Database so that they meet the QIIME environment requirements 
  i.e. Make sure U is converted to T, eliminate non-ASCII characters, asterisks "*" removed, and taxonomy file contains full-length taxonomic assignments even if it doesn't exist (i.e. <k_fungi;sk_Dikaraya;p_Basidiomycota;c_____;o_____;f_____;g_____;s_____>)
@@ -120,6 +121,44 @@ Now the headers in the rep-set-seqs-99clustered.fasta file need to be fixed, the
 Run fix_fasta_labels.py
 ```bash
 ./fix_fasta_labels.py <rep-set-seqs-99clustered.fasta> <fixed-rep-set-seqs-99clustered.fasta>
+```
+
+Import taxonomy file and final 99% clustered fasta file into QIIME2 environment
+
+```bash
+source deactivate qiime1
+source activate qiime2-2018.6
+
+qiime tools import \
+  --type 'FeatureData[Sequence]' \
+  --input-path fixed-rep-set-seqs-99clustered.fasta \
+  --output-path fixed-rep-set-seqs-99clustered.qza
+
+qiime tools import \
+  --type 'FeatureData[Taxonomy]' \
+  --source-format HeaderlessTSVTaxonomyFormat \
+  --input-path taxonomy.rdp.outfile.txt \
+  --output-path ref-taxonomy.qza
+```
+
+Extract reference reads using specific primers.
+ These primers are used to extract the 28S D1 region of the LSU rRNA, from [Tedersoo et al.](https://mycokeys.pensoft.net/article/4852/)
+
+```bash
+qiime feature-classifier extract-reads \
+  --i-sequences 85_otus.qza \
+  --p-f-primer ACSCGCTGAACTTAAGC \
+  --p-r-primer TTCCCTTTYARCAATTTCAC \
+  --o-reads 28SD1-ref-seqs.qza
+```
+
+Train the classifier from the extracted reads
+
+```bash
+qiime feature-classifier fit-classifier-naive-bayes \
+  --i-reference-reads 28SD1-ref-seqs.qza \
+  --i-reference-taxonomy ref-taxonomy.qza \
+  --o-classifier ref-taxonomy.qza
 ```
 
 
