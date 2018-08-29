@@ -74,7 +74,8 @@ wget http://ftp.arb-silva.de/release_132/Exports/taxonomy/taxmap_embl_lsu_parc_1
 
 3. Reformat FASTA file and Taxonomy Database so that they meet the QIIME environment requirements 
  i.e. Make sure U is converted to T, eliminate non-ASCII characters, asterisks "*" removed, and taxonomy file contains full-length taxonomic assignments even if it doesn't exist (i.e. <k_fungi;sk_Dikaraya;p_Basidiomycota;c_____;o_____;f_____;g_____;s_____>)
-These following python scripts are from either @walterst or @mikerobeson with minor modifications/adjustments
+
+These following python scripts are from either [@walterst](https://gist.github.com/walterst) or [@mikerobeson](https://github.com/mikerobeson/Misc_Code/tree/master/SILVA_to_RDP) with minor modifications/adjustments
 
 export python 2 path Pycogent was written in python 2.7
 ```bash
