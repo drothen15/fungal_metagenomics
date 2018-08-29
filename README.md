@@ -74,6 +74,7 @@ wget http://ftp.arb-silva.de/release_132/Exports/taxonomy/taxmap_embl_lsu_parc_1
 
 3. Reformat FASTA file and Taxonomy Database so that they meet the QIIME environment requirements 
  i.e. Make sure U is converted to T, eliminate non-ASCII characters, asterisks "*" removed, and taxonomy file contains full-length taxonomic assignments even if it doesn't exist (i.e. <k_fungi;sk_Dikaraya;p_Basidiomycota;c_____;o_____;f_____;g_____;s_____>)
+These following python scripts are from either @walterst or @mikerobeson with minor modifications/adjustments
 
 export python 2 path Pycogent was written in python 2.7
 ```bash
@@ -94,7 +95,7 @@ remove non-ASCII characters
 
 Make taxonomy file compatiable for classifier in QIIME2
 ```bash
-./python prep_silva_taxonomy_file.py <parsed.taxonomy.file.txt> <taxonomy.rdp.outfile.txt>
+./prep_silva_taxonomy_file.py <parsed.taxonomy.file.txt> <taxonomy.rdp.outfile.txt>
 ```
 
 Cluster SILVA FASTA file at 99% using QIIME1 pick.otus.py
@@ -108,3 +109,15 @@ pick_otus.py -i <sequence.outfile.fasta> -s 0.99 --threads 40 -o <99-clustered-s
 ```
 
 Now pick a repersentative set of sequences from the OTU file clustered at 99%
+```bash
+pick_rep_set.py -i <99-clustered-sequence.outfile.txt> -f <sequence.outfile.fasta> -o <rep-set-seqs-99clustered.fasta>
+```
+note : -i requires the OTU mapping file from pick_otus.py -f is the formated FASTA file containing all sequences (pre-clustering)
+
+Now the headers in the rep-set-seqs-99clustered.fasta file need to be fixed, the OTU identifier needs to be removed along with the white space.
+Run fix_fasta_labels.py
+```bash
+./fix_fasta_labels.py <rep-set-seqs-99clustered.fasta> <fixed-rep-set-seqs-99clustered.fasta>
+```
+
+
