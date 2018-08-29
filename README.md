@@ -48,6 +48,7 @@ readlength.sh in=cat-r1-fastq out=histogram-r1.txt | readlength.sh in=cat-r2-fas
 ``` 
 
 # Train NaiveBayes (sklearn) Classifier in QIIME2 Environment
+ This procedure is constructing novel classifiers - this example uses the latest SILVA database and creates classifiers on different domains of the 28S LSU rRNA
 
 1. Add QIIME2 to $PATH and activate QIIME Environment
 ```bash
