@@ -50,7 +50,7 @@ readlength.sh in=cat-r1-fastq out=histogram-r1.txt | readlength.sh in=cat-r2-fas
 # Train NaiveBayes (sklearn) Classifier in QIIME2 Environment
  This procedure is for constructing novel classifiers - this example uses the latest SILVA database and creates classifiers on different domains of the 28S LSU rRNA
 
-1. Add QIIME2 to $PATH and activate QIIME Environment
+1. Add Anaconda2 to to $PATH and activate QIIME2 Environment
 ```bash
 export PATH=/programs/Anaconda2/bin:$PATH
 source activate qiime2-2018.6 
@@ -127,7 +127,7 @@ Import taxonomy file and final 99% clustered fasta file into QIIME2 environment
 
 ```bash
 source deactivate qiime1
-source activate qiime2-2018.6
+source activate qiime2-2018.11
 
 qiime tools import \
   --type 'FeatureData[Sequence]' \
@@ -146,7 +146,7 @@ Extract reference reads using specific primers.
 
 ```bash
 qiime feature-classifier extract-reads \
-  --i-sequences 85_otus.qza \
+  --i-sequences fixed-rep-set-seqs-99clustered.fasta \
   --p-f-primer ACSCGCTGAACTTAAGC \
   --p-r-primer TTCCCTTTYARCAATTTCAC \
   --o-reads 28SD1-ref-seqs.qza
@@ -158,7 +158,46 @@ Train the classifier from the extracted reads
 qiime feature-classifier fit-classifier-naive-bayes \
   --i-reference-reads 28SD1-ref-seqs.qza \
   --i-reference-taxonomy ref-taxonomy.qza \
-  --o-classifier ref-taxonomy.qza
+  --o-classifier 28sd1-99-classifier.qza
+```
+
+Alternatively the 28S classifier can be trained on the entire gene (This seems to work better when benchmarked against ITS classification)
+```bash
+qiime feature-classifier fit-classifier-naive-bayes \
+  --i-reference-reads 28SD1-ref-seqs.qza \
+  --i-reference-taxonomy ref-taxonomy.qza \
+  --o-classifier 28s-99-classifier.qza
 ```
 
 
+# Taxonomic Classification of Samples
+The script automates the workflow in QIIME2 from QC to taxonomic assignment
+
+Outputs include:
+
+rep-seqs.qzv
+table.qzv
+taxonomy.qzv
+barplot.qzv
+
+Paired-end data is run through this shell
+```bash
+qiime_analysis_2018.11.sh
+```
+
+Single-end data is run through this shell
+```bash
+qiime_analysis_singleread_2018.11.sh
+```
+
+Paired-end script will prompt for the following input variables
+** INPUT DIRECTORY CAN ONLY HAVE GZIP FASTQ FILES ** 
+```bash
+1. trim-left_f: int
+2. trim-left_r: int
+3. trunc-len_f: int
+4. trunc-len_r: int
+5. input_dir:   $PATH
+6. output_dir:  $PATH
+7. taxonomic_classifier: $PATH
+```
