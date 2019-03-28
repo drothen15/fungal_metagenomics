@@ -201,3 +201,45 @@ Paired-end script will prompt for the following input variables
 6. output_dir:  $PATH
 7. taxonomic_classifier: $PATH
 ```
+
+
+# Alternative Taxonomic Classification with BLASTn Using Brocc q2-Plugin
+
+By default the qiime_analysis_2018.11.sh & qiime_analysis_singleread.sh use trained taxonomic classifiers for the ITS and 28S genes.
+Both classifiers use the SILVA databases of curated sequences, which can tend to result in a fair amount of the sample only be assigned to higher levels of taxonomy.
+
+Assigning taxonomy with the NCBI database open up much more (less curated) data to be used for taxonomic assignment, and can give a little more information on samples that couldn't being resolved well with a trained classifer.
+
+  
+-The following plugin q2-brocc built by [@kylebittinger](https://github.com/kylebittinger/q2-brocc) works in the QIIME2 environment and has already been installed on Cornell's BioHPC
+
+
+1. After running the analysis script the qiime environment will need to be re-activated, visit Cornell's BioHPC website to view the latest activation instructions.
+
+2. Export your the path to the NCBI database as a locale variable
+```bash
+export BLASTDB=/path/to/NCBI_db/
+```
+- NOTE: If you're having trouble with setting up a NCBI database visit [@kylebittinger](https://github.com/kylebittinger/q2-brocc) for more detailed instructions
+
+
+2. Post QIIME2 activation move to the directory with the (.qza) and (.qzv) data files and run the following commands.
+
+```bash
+#Assigning Taxonomy with BLASTn using Brocc Plugin
+qiime brocc classify-brocc \
+  --i-query $output_dirvar/rep-seqs.qza \
+  --o-classification $otuput_dirvar/brocc-taxonomy.qza
+
+#Creating Visual Taxonomy File
+qiime metadata tabulate \
+  --m-input-file brocc-taxonomy.qza \
+  --o-visualization brocc-taxonomy.qzv
+
+#BLASTn Taxonomic Barplot Graphing"
+qiime taxa barplot \
+  --i-table table.qza \
+  --i-taxonomy brocc-taxonomy.qza \
+  --o-visualization brocc-taxa-bar-plot.qzv \
+  --m-metadata-file denoising-stats.qza
+ ```
