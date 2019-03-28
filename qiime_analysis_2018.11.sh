@@ -146,22 +146,22 @@ qiime taxa barplot \
 
 ## BROCC PLUGIN FOR BLASTn TAXONOMIC ASSIGNMENT AND BAR PLOT ##
 
-echo "Step 9: Assigning Taxonomy with BLASTn using Brocc Plugin"
-qiime brocc classify-brocc \
-  --i-query $output_dirvar/rep-seqs.qza \
-  --o-classification $otuput_dirvar/brocc-taxonomy.qza
+#echo "Step 9: Assigning Taxonomy with BLASTn using Brocc Plugin"
+#qiime brocc classify-brocc \
+#  --i-query $output_dirvar/rep-seqs.qza \
+#  --o-classification $otuput_dirvar/brocc-taxonomy.qza
 
-echo "Creating Visual Taxonomy File"
-qiime metadata tabulate \
-  --m-input-file $output_dirvar/brocc-taxonomy.qza \
-  --o-visualization $output_dirvar/brocc-taxonomy.qzv
+#echo "Creating Visual Taxonomy File"
+#qiime metadata tabulate \
+#  --m-input-file $output_dirvar/brocc-taxonomy.qza \
+#  --o-visualization $output_dirvar/brocc-taxonomy.qzv
 
-echo "Step 10: BLASTn Taxonomic Barplot Graphing"
-qiime taxa barplot \
-  --i-table $output_dirvar/table.qza \
-  --i-taxonomy $output_dirvar/brocc-taxonomy.qza \
-  --o-visualization $output_dirvar/brocc-taxa-bar-plot.qzv \
-  --m-metadata-file $output_dirvar/denoising-stats.qza
+#echo "Step 10: BLASTn Taxonomic Barplot Graphing"
+#qiime taxa barplot \
+#  --i-table $output_dirvar/table.qza \
+#  --i-taxonomy $output_dirvar/brocc-taxonomy.qza \
+#  --o-visualization $output_dirvar/brocc-taxa-bar-plot.qzv \
+#  --m-metadata-file $output_dirvar/denoising-stats.qza
 
 
 echo "COMPLETE - IF ERRORS OCCURRED THEM TROUBLESHOOT WITH LOG FILES"
