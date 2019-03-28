@@ -12,9 +12,11 @@
 ## Trimming variables ## - Important!! These need to be called as arguments when executing the shell script
 
 
-##Exporting local variable before activation (This step was included because BioHPC changed default system locale)
+## Exporting local variable before activation (This step was included because BioHPC changed default system locale)
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
+## Setting Local Blast Datebase Variable for Brocc q2-Plugin
+export BLASTDB=/workdir/fungal_metagenomics/ncbi_db_qiime/
 
 
 echo -n 'enter trim-left_f: '
@@ -123,7 +125,6 @@ qiime feature-table summarize \
   --m-sample-metadata-file $output_dirvar/denoising-stats.qza
 
 
-
 ## Taxonomic Picking ##
 echo "Step 7: Taxonomic Classification with NaiveBayes"
 qiime feature-classifier classify-sklearn \
@@ -143,6 +144,24 @@ qiime taxa barplot \
   --o-visualization $output_dirvar/taxa-bar-plot.qzv \
   --m-metadata-file $output_dirvar/denoising-stats.qza
 
+## BROCC PLUGIN FOR BLASTn TAXONOMIC ASSIGNMENT AND BAR PLOT ##
+
+echo "Step 9: Assigning Taxonomy with BLASTn using Brocc Plugin"
+qiime brocc classify-brocc \
+  --i-query $output_dirvar/rep-seqs.qza \
+  --o-classification $otuput_dirvar/brocc-taxonomy.qza
+
+echo "Creating Visual Taxonomy File"
+qiime metadata tabulate \
+  --m-input-file $output_dirvar/brocc-taxonomy.qza \
+  --o-visualization $output_dirvar/brocc-taxonomy.qzv
+
+echo "Step 10: BLASTn Taxonomic Barplot Graphing"
+qiime taxa barplot \
+  --i-table $output_dirvar/table.qza \
+  --i-taxonomy $output_dirvar/brocc-taxonomy.qza \
+  --o-visualization $output_dirvar/brocc-taxa-bar-plot.qzv \
+  --m-metadata-file $output_dirvar/denoising-stats.qza
 
 
-echo Complete
+echo "COMPLETE - IF ERRORS OCCURRED THEM TROUBLESHOOT WITH LOG FILES"
